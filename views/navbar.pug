@@ -1,0 +1,17 @@
+- var links= links
+
+mixin link(strLink)
+    - var href = strLink.toLowerCase()
+    div.interact
+        a(href=href)=strLink  
+
+div(class='top-bar')
+    div.interact
+        a(href='/')
+            h1.underline Card Game
+    if links 
+        each l in links
+            +link(l)
+    div(class='username')
+        if (username) 
+            p#username= username

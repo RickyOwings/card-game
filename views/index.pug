@@ -1,0 +1,14 @@
+extends layout.pug
+
+block content
+    include ./cookieconsent.pug
+    div.center-screen
+        p.t-center Welcome to the card game. 
+        if (needsLogin)
+            p.t-center Please input a username in the 
+                a(href="/login") login
+                |  screen before playing...
+        else
+            p.t-center Press 
+                a(href="/lobbies") lobbies
+                |  to join a lobby

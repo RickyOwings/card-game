@@ -1,0 +1,10 @@
+So the idea is to make some sort of card game. I am kind of inspired by Stacklands a little bit. Definetely not that though...
+
+We could have a card class react component. It would have a health, different properties, an image and such.
+    - Image
+    - Abilities
+
+For now, we could have a bot mode where you attack a bot player... It would be good to build the game so that it has a back end or something...
+    - If a back end is created, then we could check the attacks on the server side to make sure they are valid. You could also play against someone else...
+
+Everything is turn based like pokemon. You have to submit your moves. Then it sends your move to the server.

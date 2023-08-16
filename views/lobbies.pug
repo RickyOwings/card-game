@@ -1,0 +1,18 @@
+extends layout.pug
+
+block content
+    div.spacer
+    div.center-screen
+        div.background-secondary.center-screen
+            h2.t-center.underline Lobbies
+            table.lobbies
+                tr
+                    th Lobby ID
+                    th Users
+                    th 
+        div.spacer
+        div.lobby-controls
+            form(id="createlobby" action="/lobbies", method="POST", autocomplete="off")
+                input(class="interact" type="submit" value="Create Lobby")
+    script(type="module")
+        include ./src/lobbies.js

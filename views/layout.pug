@@ -1,0 +1,20 @@
+- var getPlayers= (players) ? players : undefined;
+
+mixin playerCont(name)
+    p=`${name}`
+
+doctype html
+html
+    include head.pug
+
+    body 
+        include navbar.pug
+        div(class='content')
+            block content
+        if players
+            div(class='users')
+                h2.underline Users
+                if getPlayers
+                    each p in players
+                        +playerCont(p)
+              
