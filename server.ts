@@ -26,19 +26,57 @@ class Lobby {
         Lobby.idAssign++;
         return id;
     }
+    public static getLobbyId(username: string): number {
+        for (let i = 0; i < Lobby.lobbies.length; i++){
+            if (Lobby.lobbies[i].users.includes(username)) return Lobby.lobbies[i].id;
+        }
+        return -1;
+    }
 
-    public users: String[];
+    public static getLobbyFromUsername(username: string): Lobby | undefined {
+        for (let i = 0; i < Lobby.lobbies.length; i++){
+            if (Lobby.lobbies[i].users.includes(username)) return Lobby.lobbies[i];
+        }
+        return undefined;
+    }
+
+    public static lobbyById(id: number): Lobby | undefined {
+        for (let i = 0; i < Lobby.lobbies.length; i++){
+            if (Lobby.lobbies[i].id == id) return Lobby.lobbies[i];
+        }
+        return undefined;
+    }
+
+    public users: string[];
     public id: number;
+    public capacity: number = 2;
 
     constructor(...users: string[]){
         this.users = users; 
         this.id = Lobby.newId();
         Lobby.lobbies.push(this);
     }
+
+    public isFull(): boolean {
+        if (this.users.length >= this.capacity) return true;
+        return false;
+    }
+
+    public removeUser(username: string) {
+        const newUsers: string[] = [];
+        this.users.forEach((user)=>{
+            if (user !== username) newUsers.push(user);
+        })
+        this.users = newUsers;
+    }
+
+    public addUser(username: string) {
+        this.users.push(username);
+    }
 }
 
-new Lobby("Bob", "BaCharlie");
-new Lobby("Markiplier", "Jacksepticeye");
+new Lobby("BaCharlie");
+new Lobby("Markiplier");
 
 const PORT = 8000;
 const app = express();
@@ -126,8 +164,33 @@ app.get('/getlobbies', (req, res)=>{
     res.send(Lobby.lobbies);
 })
 
-app.get('/joinlobby', (req, res)=>{
+app.post('/joinlobby', (req, res)=>{
+    const id = req.cookies.id;
+    const username = getUsername(id);
+    const lobbyID = req.body.id;
 
+    const targetLobby = Lobby.lobbyById(lobbyID);    
+    // Make sure lobby exists
+    if (targetLobby === undefined) return;
+    console.log("Lobby exists");
+
+    // Make sure that the lobby is not full
+    if (targetLobby.isFull()) return;
+    console.log("Lobby is not full")
+
+    // Make sure user not already in lobby
+    if (targetLobby.users.includes(username)) return;
+    console.log("User is not already in lobby");
+
+    // Find whichever lobby the user is already in, and remove them from that lobby
+    const currentLobby = Lobby.getLobbyFromUsername(username); 
+    if (currentLobby !== undefined) {
+        currentLobby.removeUser(username); 
+        console.log("Removing user from lobby " + currentLobby.id);
+    }
+    // Put the user into the target lobby
+    targetLobby.addUser(username);
+    console.log(`Successfully put ${username} in lobby ${lobbyID}`);
 });
 
 // ---------------------------------- ABOUT SCREEN ------------------------------

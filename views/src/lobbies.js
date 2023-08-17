@@ -1,10 +1,42 @@
 function createJoinButton(id){
     const button = document.createElement("button");
     const td = document.createElement("td");
-    button.className = "interact"
-    button.innerHTML = "Join";
+    button.className = "interact";
+    button.id = `button${id}`;
+    assignButtonJoin(button, id);
+
     td.appendChild(button);
     return td;
+}
+
+function createLeaveButton(id){
+    const button = document.createElement("button");
+    const td = document.createElement("td");
+    button.className = "interact";
+    button.id = `button${id}`;
+    assignButtonLeave(button, id);
+
+    td.appendChild(button);
+    return td;
+}
+
+function assignButtonJoin(button, id){
+    button.innerHTML = "Join";
+    button.onclick = () => {
+        setTimeout(()=>{
+            loadLobbies();
+        }, 100);
+        $.post("/joinlobby", {id: id}
+        );
+    }
+}
+
+function assignButtonLeave(button, id){
+    button.innerHTML = "Leave";
+
+    button.onclick = () => {
+        console.log(`id:${id} try leave`);
+    }
 }
 
 var lastRowIDs = [];
@@ -42,6 +74,14 @@ function loadLobbies(){
                     if (findRow) { // row already exists
                         const idHTML = findRow.getElementsByClassName("id-data")[0];
                         const usersHTML = findRow.getElementsByClassName("users-data")[0];
+                        let button = document.getElementById(`button${id}`);
+                        if (rowClass.length) {
+                            console.log("assign leave");
+                            assignButtonLeave(button, id);
+                        } else {
+                            console.log("assign join");
+                            assignButtonJoin(button, id);
+                        }
                         findRow.className = rowClass;
 
                         idHTML.innerHTML = id;
@@ -58,13 +98,13 @@ function loadLobbies(){
 
                         const usersHTML = document.createElement("td");
 
-                        const joinButton = createJoinButton(id);
+                        const button = (rowClass.length) ? createLeaveButton(id) : createJoinButton(id);
                         usersHTML.innerHTML = usersString;
                         usersHTML.className = "users-data";
 
                         row.appendChild(idHTML);
                         row.appendChild(usersHTML);
-                        row.appendChild(joinButton);
+                        row.appendChild(button);
                         lobbies.appendChild(row); 
                     }
                 }
@@ -85,7 +125,7 @@ function loadLobbies(){
 }
 loadLobbies();
 
-setInterval(loadLobbies, 500);
+setInterval(loadLobbies, 2000);
 
 
 
@@ -102,15 +142,4 @@ $("#createlobby").on("submit", (event)=>{
     });
 })
 
-$("#joinlobby").on("submit", (event)=>{
-    event.preventDefault();
-    const formData = $(this).serialize();
-    $.ajax({
-        url: "/joinlobbies",
-        type: "post",
-        data: formData,
-        success: (data) => {
-            if (data === "In System") alert("You are in a lobby already!")
-        }
-    });
-})
+
